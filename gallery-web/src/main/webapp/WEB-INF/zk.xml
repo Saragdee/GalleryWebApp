@@ -1,0 +1,10 @@
+<zk>
+    <config-name>app-config</config-name>
+    <system-config>
+        <label-location>/WEB-INF/i18n/common.properties</label-location>
+    </system-config>
+
+    <listener>
+        <listener-class>com.example.gallery.ZkInit</listener-class>
+    </listener>
+</zk>

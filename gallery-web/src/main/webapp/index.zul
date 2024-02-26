@@ -1,0 +1,41 @@
+<zk xmlns="http://www.zkoss.org/2005/zul">
+    <window apply="org.zkoss.bind.BindComposer" viewModel="@id('vm') @init('com.example.gallery.DTO.PhotoDto')">
+        <vlayout>
+            <!-- Description Input -->
+            <hlayout>
+                <label value="Description:"/>
+                <textbox value="@bind(vm.description)" hflex="1"/>
+            </hlayout>
+
+            <!-- Upload Date Input -->
+<!--            <hlayout>-->
+<!--                <label value="Upload Date:"/>-->
+<!--                <datebox value="@bind(vm.uploadDate)" format="yyyy-MM-dd" hflex="1"/>-->
+<!--            </hlayout>-->
+
+            <!-- Tags Input -->
+            <hlayout>
+                <label value="Tag:"/>
+                <textbox id="tagBox" hflex="1"/>
+                <button label="Add" onClick="@command('addTag', tagName=tagBox.value)"/>
+            </hlayout>
+
+            <!-- Display Tags -->
+            <grid model="@load(vm.tags)" emptyMessage="No tags">
+                <columns>
+                    <column label="Tag" width="200px"/>
+                    <column label="Action"/>
+                </columns>
+                <template name="model">
+                    <row>
+                        <label value="@load(each.name)"/>
+                        <button label="Remove" onClick="@command('removeTag', tag=each)"/>
+                    </row>
+                </template>
+            </grid>
+
+            <!-- Submit Button -->
+            <button label="Submit" onClick="@command('submit')"/>
+        </vlayout>
+    </window>
+</zk>
