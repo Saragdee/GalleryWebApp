@@ -14,7 +14,7 @@
                 <zul:textbox hflex="1" value="@bind(vm.tagsAsString)" placeholder="Enter tags, separated by commas"/>
             </n:div>
             <n:div class="form-group">
-                <button label="Submit" sclass="btn btn-primary" onClick="@command('submit')" />
+                <xh:button label="Submit" sclass="btn btn-primary" onClick="@command('submit')" />
             </n:div>
         </n:div>
 </zk>

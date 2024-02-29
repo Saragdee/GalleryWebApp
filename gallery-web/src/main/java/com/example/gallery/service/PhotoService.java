@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import com.example.gallery.repository.PhotoRepository;
 
 import javax.persistence.EntityNotFoundException;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -42,7 +43,7 @@ public class PhotoService {
     private PhotoEntity convertToEntity(PhotoDto dto) {
         PhotoEntity photo = new PhotoEntity();
         photo.setDescription(dto.getDescription());
-        photo.setUploadDate(dto.getUploadDate());
+        photo.setUploadDate(LocalDate.now());
 
         if (dto.getTags() != null) {
             Set<TagEntity> tags = dto.getTags().stream()

@@ -10,7 +10,7 @@ import javax.persistence.EntityNotFoundException;
 
 @RestController
 @RequestMapping("/photos")
-// TODO: @ExeptionHandler, @ControllerAdvice, @ResponseStatus
+// TODO: @ExceptionHandler, @ControllerAdvice, @ResponseStatus
 public class PhotoController {
     private final PhotoService photoService;
 
@@ -26,7 +26,7 @@ public class PhotoController {
 
     @GetMapping("/{id}")
     public ResponseEntity<PhotoDto> getPhoto(@PathVariable Long id) {
-        try { // TODO: @ExeptionHandler/@ControllerAdvice, nes naudojama versija <3.2
+        try { // TODO: @ExceptionHandler/@ControllerAdvice
             PhotoDto photo = photoService.getPhotoById(id);
             return ResponseEntity.ok(photo);
         } catch (EntityNotFoundException e) { // FIXME exception handler
