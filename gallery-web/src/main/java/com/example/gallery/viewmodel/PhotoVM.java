@@ -32,6 +32,7 @@ public class PhotoVM {
     public void init() {
     photoDto = new PhotoDto(null, "",  null, null);
     tagsAsString = "";
+        System.out.println("IT WORKS");
 
     }
 
@@ -47,12 +48,12 @@ public class PhotoVM {
         if (tags.isEmpty()) {
             return new HashSet<>();
         }
-
         return Arrays.stream(tags.split(","))
                 .map(String::trim)
                 .filter(tag -> !tag.isEmpty())
                 .map(tag -> new TagDto(null, tag))
                 .collect(Collectors.toSet());
+
     }
 }
 

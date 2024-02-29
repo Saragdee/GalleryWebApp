@@ -1,20 +1,19 @@
 <?init class="org.zkoss.zk.ui.util.Composition" arg0="./templates/masterTemplate.zul" ?>
 <?page complete="true"?>
-
-<zk xmlns:n="native" xmlns:xh="xhtml" xmlns:zul="http://www.zkoss.org/2005/zul">
-    <xh:div self="@{define(pageContent)}" viewModel="@id('vm') @init('com.example.gallery.viewmodel.PhotoVM')"/>
-
-        <n:div class="container mt-3">
-            <n:div class="form-group">
-                <zul:label value="Description:" />
+<zk xmlns="native" xmlns:xh="xhtml" xmlns:zul="http://www.zkoss.org/2005/zul">
+    <xh:div self="@{define(pageContent)}" viewModel="@id('vm') @init('com.example.gallery.viewmodel.PhotoVM')">
+        <div class="container mt-3">
+            <div class="form-group">
+                <zul:label value="Description" />
                 <zul:textbox hflex="1" value="@bind(vm.photoDto.description)" placeholder="Enter description"/>
-            </n:div>
-            <n:div class="form-group">
+            </div>
+            <div class="form-group">
                 <zul:label value="Tags (comma-separated):" />
                 <zul:textbox hflex="1" value="@bind(vm.tagsAsString)" placeholder="Enter tags, separated by commas"/>
-            </n:div>
-            <n:div class="form-group">
-                <xh:button label="Submit" sclass="btn btn-primary" onClick="@command('submit')" />
-            </n:div>
-        </n:div>
+            </div>
+            <div class="form-group">
+                <zul:button label="Submit" class="btn btn-primary" onClick="@command('submit')" type="button" />
+            </div>
+        </div>
+    </xh:div>
 </zk>
