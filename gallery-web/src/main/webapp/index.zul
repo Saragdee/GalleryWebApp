@@ -3,6 +3,10 @@
 <zk xmlns="native" xmlns:xh="xhtml" xmlns:zul="http://www.zkoss.org/2005/zul">
     <xh:div self="@{define(pageContent)}" viewModel="@id('vm') @init('com.example.gallery.viewmodel.PhotoVM')">
         <div class="container mt-3">
+            <div class = "form-group">
+                <zul:label value = "Upload Image"/>
+                <zul:button label="Choose File" upload="true" onUpload="@command('uploadImage', event=uploadEvent)" />
+            </div>
             <div class="form-group">
                 <zul:label value="Description" />
                 <zul:textbox hflex="1" value="@bind(vm.photoDto.description)" placeholder="Enter description"/>

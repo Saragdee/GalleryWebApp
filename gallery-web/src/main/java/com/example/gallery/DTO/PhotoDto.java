@@ -9,9 +9,10 @@ import java.util.Set;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder // TODO: superbuilder
+//@Builder // TODO: superbuilder
 public class PhotoDto {
     private Long id;
+    private byte[] image;
     private String description;
     private LocalDate uploadDate;
     private Set<TagDto> tags;
