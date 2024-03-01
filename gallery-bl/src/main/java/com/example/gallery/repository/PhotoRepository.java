@@ -1,4 +1,5 @@
 package com.example.gallery.repository;
+
 import com.example.gallery.entities.PhotoEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

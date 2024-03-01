@@ -28,18 +28,17 @@ public class PhotoVM {
     private PhotoService photoService;
     private PhotoDto photoDto;
     private String description;
-//    private LocalDate uploadDate;
+    //private LocalDate uploadDate;
     private String tagsAsString;
 
     @Init
     public void init() {
-    photoDto = new PhotoDto(null,null, "", null, null);
-    tagsAsString = "";
+        photoDto = new PhotoDto(null, null, "", null, null);
+        tagsAsString = "";
     }
 
     @Command
-    public void submit()
-    {
+    public void submit() {
         photoDto.setTags(convertStringToSet(tagsAsString));
         photoService.createPhoto(photoDto);
     }
@@ -61,9 +60,7 @@ public class PhotoVM {
         }
     }
 
-
-
-    // TODO: Move to a utils package?
+    // TODO: Move to a utils package
     private Set<TagDto> convertStringToSet(String tags) {
         if (tags.isEmpty()) {
             return new HashSet<>();
