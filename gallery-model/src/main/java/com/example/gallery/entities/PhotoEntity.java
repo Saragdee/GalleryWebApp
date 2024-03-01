@@ -20,6 +20,8 @@ public class PhotoEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
+    @Column(name = "image")
+    private byte[] image;
     @Column(name = "description")
     private String description;
     @Column(name = "upload_date", nullable = false)

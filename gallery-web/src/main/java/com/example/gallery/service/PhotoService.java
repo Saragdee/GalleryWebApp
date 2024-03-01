@@ -29,9 +29,10 @@ public class PhotoService {
 
         PhotoDto dto = new PhotoDto();
         dto.setId(photo.getId());
+        dto.setImage(photo.getImage());
         dto.setDescription(photo.getDescription());
         dto.setUploadDate(photo.getUploadDate());
-        // N+1 SELECT problem? not sure
+        // TODO:N+1 SELECT problem
         Set<TagDto> tagDtos = photo.getTags().stream()
                 .map(tagEntity -> new TagDto(tagEntity.getId(), tagEntity.getName()))
                 .collect(Collectors.toSet());
@@ -39,9 +40,9 @@ public class PhotoService {
 
         return dto;
     }
-
     private PhotoEntity convertToEntity(PhotoDto dto) {
         PhotoEntity photo = new PhotoEntity();
+        photo.setImage(dto.getImage());
         photo.setDescription(dto.getDescription());
         photo.setUploadDate(LocalDate.now());
 
@@ -57,22 +58,15 @@ public class PhotoService {
         } else {
             photo.setTags(new HashSet<>());
         }
-
         return photo;
     }
     public PhotoDto createPhoto(PhotoDto photoDto) {
-        // Convert DTO to entity
         PhotoEntity photoEntity = convertToEntity(photoDto);
-
-        // Persist the new photo entity
         PhotoEntity savedPhotoEntity = photoRepository.save(photoEntity);
-
-        // Convert the persisted entity back to DTO
         return convertToDto(savedPhotoEntity);
     }
     // TODO: @Transactional(readOnly = true)
     public PhotoDto getPhotoById(Long id) {
-        // Fetch and convert the entity to DTO
         PhotoEntity photoEntity = photoRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Photo not found for ID: " + id));
         return convertToDto(photoEntity);
