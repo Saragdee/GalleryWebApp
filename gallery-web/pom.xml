@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
@@ -27,7 +27,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
-<!--            <version>${spring-boot.version}</version>-->
 
         </dependency>
         <!-- ZK -->
@@ -36,10 +35,10 @@
             <artifactId>zul</artifactId>
 
             <exclusions>
-            <exclusion>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-jdk14</artifactId>
-            </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-jdk14</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
@@ -66,11 +65,17 @@
             <groupId>org.zkoss.zk</groupId>
             <artifactId>zkex</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.imgscalr</groupId>
+            <artifactId>imgscalr-lib</artifactId>
+            <version>4.2</version>
+        </dependency>
 
-<!--        <dependency>-->
-<!--        <groupId>org.webjars</groupId>-->
-<!--        <artifactId>jquery</artifactId>-->
-<!--        </dependency>-->
+
+        <!--        <dependency>-->
+        <!--        <groupId>org.webjars</groupId>-->
+        <!--        <artifactId>jquery</artifactId>-->
+        <!--        </dependency>-->
 
     </dependencies>
 
