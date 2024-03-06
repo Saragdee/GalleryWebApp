@@ -5,7 +5,9 @@ import com.example.gallery.service.PhotoService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import javax.persistence.EntityNotFoundException;
+import java.io.IOException;
 
 
 @RestController
@@ -19,8 +21,8 @@ public class PhotoController {
     }
 
     @PostMapping
-    public ResponseEntity<PhotoDto> createPhoto(@RequestBody PhotoDto photoDto) {
-        PhotoDto createdPhoto = photoService.createPhoto(photoDto);
+    public ResponseEntity<PhotoDto> createPhoto(@RequestBody PhotoDto photoDto) throws IOException {
+        PhotoDto createdPhoto = photoService.uploadPhoto(photoDto);
         return ResponseEntity.ok(createdPhoto);
     }
 
@@ -34,6 +36,7 @@ public class PhotoController {
         }
 
     }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deletePhoto(@PathVariable Long id) {
         try {

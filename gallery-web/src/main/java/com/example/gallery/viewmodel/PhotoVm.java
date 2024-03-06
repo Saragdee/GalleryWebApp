@@ -15,6 +15,7 @@ import org.zkoss.zk.ui.select.annotation.VariableResolver;
 import org.zkoss.zk.ui.select.annotation.WireVariable;
 import org.zkoss.zkplus.spring.DelegatingVariableResolver;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -23,7 +24,7 @@ import java.util.stream.Collectors;
 @Getter
 @Setter
 @VariableResolver(DelegatingVariableResolver.class)
-public class PhotoVM {
+public class PhotoVm {
     @WireVariable
     private PhotoService photoService;
     private PhotoDto photoDto;
@@ -33,26 +34,31 @@ public class PhotoVM {
 
     @Init
     public void init() {
-        photoDto = new PhotoDto(null, null, "", null, null);
+        photoDto = new PhotoDto(null, null, null, null, null, null);
         tagsAsString = "";
     }
 
     @Command
-    public void submit() {
+    public void submit() throws IOException {
         photoDto.setTags(convertStringToSet(tagsAsString));
-        photoService.createPhoto(photoDto);
+        photoService.uploadPhoto(photoDto);
     }
 
     @Command
     public void uploadImage(@ContextParam(ContextType.TRIGGER_EVENT) UploadEvent event) {
         Media media = event.getMedia();
         if (media != null) {
-            System.out.println("Media: " + media.getName());
             if (media.isBinary()) {
-                byte[] bytes = media.getByteData();
-                photoDto.setImage(bytes);
+                byte[] originalImageData = media.getByteData();
+                try {
+                    byte[] thumbnail = photoService.createThumbnail(originalImageData, 100);  // Assuming 100 is the desired size
+                    String base64Thumbnail = photoService.convertThumbnailToBase64(thumbnail);
+                    photoDto.setImage(originalImageData);
+                    photoDto.setThumbnail(base64Thumbnail);
+                } catch (IOException e) {
+                    System.out.println("Image upload kaput");
+                }
             } else {
-                //TODO: Exceptions/logger
                 System.out.println("The media of image upload was non-binary or there is an error");
             }
         } else {
