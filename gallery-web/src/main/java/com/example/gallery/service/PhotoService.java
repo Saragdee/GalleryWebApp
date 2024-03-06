@@ -15,11 +15,15 @@ import org.springframework.stereotype.Service;
 
 import javax.imageio.ImageIO;
 import javax.persistence.EntityNotFoundException;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Predicate;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -116,5 +120,29 @@ public class PhotoService {
         };
         return photoRepository.findAll(spec).stream().map(ImageInfoDto::of).collect(Collectors.toList());
     }
+
+    public List<ImageInfoDto> searchPhotosByTags(String tagsString) {
+        Specification<PhotoEntity> spec = (root, query, criteriaBuilder) -> {
+            if (tagsString == null || tagsString.trim().isEmpty()) {
+                return criteriaBuilder.conjunction();
+            }
+            query.distinct(true);
+
+            String[] tags = tagsString.split(",");
+            List<Predicate> predicates = new ArrayList<>();
+            for (String tag : tags) {
+                String trimmedTag = tag.trim().toLowerCase();
+                if (!trimmedTag.isEmpty()) {
+                    Join<PhotoEntity, TagEntity> tagsJoin = root.join("tags", JoinType.LEFT);
+                    predicates.add(criteriaBuilder.like(criteriaBuilder.lower(tagsJoin.get("name")), "%" + trimmedTag + "%"));
+
+                }
+            }
+            return criteriaBuilder.or(predicates.toArray(new Predicate[0]));
+        };
+
+        return photoRepository.findAll(spec).stream().map(ImageInfoDto::of).collect(Collectors.toList());
+    }
+
 
 }

@@ -21,7 +21,9 @@ public class ExploreVm {
     private PhotoService photoService;
     private List<ImageInfoDto> images;
     @Setter
-    private String searchDescription;
+    private String searchByDescription;
+    @Setter
+    private String searchByTags;
 
     @Init
     public void init() {
@@ -30,15 +32,21 @@ public class ExploreVm {
 
     @Command
     @NotifyChange("images")
-    public void removeImage(@BindingParam("id") Long id) {
+    public void doRemoveImage(@BindingParam("id") Long id) {
         photoService.removePhotoById(id);
-        //    images = photoService.getAllPhotoImages();
+            images = photoService.getAllPhotoImages();
     }
 
     @Command
     @NotifyChange("images")
-    public void search() {
-        images = photoService.searchPhotosByDescription(searchDescription);
+    public void doSearchByDescription() {
+        images = photoService.searchPhotosByDescription(searchByDescription);
+    }
+
+    @Command
+    @NotifyChange("images")
+    public void doSearchByTags() {
+        images = photoService.searchPhotosByTags(searchByTags);
     }
 
 }
