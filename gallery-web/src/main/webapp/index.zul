@@ -1,7 +1,7 @@
 <?init class="org.zkoss.zk.ui.util.Composition" arg0="./templates/masterTemplate.zul" ?>
 <?page complete="true"?>
 <zk xmlns:xh="xhtml" xmlns:zul="http://www.zkoss.org/2005/zul" xmlns="native">
-    <xh:div self="@{define(index)}" viewModel="@id('vm') @init('com.example.gallery.viewmodel.PhotoVM')">
+    <xh:div self="@{define(index)}" viewModel="@id('vm') @init('com.example.gallery.viewmodel.PhotoVm')">
         <div class="container mt-3">
             <div class="form-group">
                 <zul:label value="Upload Image"/>
