@@ -14,10 +14,11 @@ import java.util.Set;
 @NoArgsConstructor
 @Table(name = "tags")
 public class TagEntity {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column (name = "id")
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
-    @Column(name = "name",unique = true)
+    @Column(name = "name", unique = true)
     private String name;
 
     @ManyToMany(mappedBy = "tags")

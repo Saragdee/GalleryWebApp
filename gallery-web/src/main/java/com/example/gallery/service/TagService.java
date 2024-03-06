@@ -2,8 +2,8 @@ package com.example.gallery.service;
 
 import com.example.gallery.DTO.TagDto;
 import com.example.gallery.entities.TagEntity;
-import org.springframework.stereotype.Service;
 import com.example.gallery.repository.TagRepository;
+import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.Set;
@@ -22,8 +22,7 @@ public class TagService {
                 .orElseGet(() -> new TagEntity(dto.getName()));
     }
 
-    public Set<TagEntity> getTags(Collection<TagDto> crap)
-    {
+    public Set<TagEntity> getTags(Collection<TagDto> crap) {
         return crap.stream()
                 .map(this::convertToEntity)
                 .collect(Collectors.toSet());
