@@ -31,7 +31,7 @@ public class PhotoEntity {
     private LocalDate uploadDate;
 
     //@Column(name = "tags")
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "photo_tags", joinColumns = @JoinColumn(name = "photo_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
 
     // Cascade? -- kai ivyksta veiksmas su photo, pvz delete, tegul ivyksta ir associated entity
