@@ -23,10 +23,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -49,30 +46,33 @@ public class PhotoService {
         dto.setDescription(photo.getDescription());
         dto.setUploadDate(photo.getUploadDate());
         // TODO:N+1 SELECT problem
-        Set<TagDto> tagDtos = photo.getTags().stream()
-                .map(tagEntity -> new TagDto(tagEntity.getId(), tagEntity.getName()))
-                .collect(Collectors.toSet());
+        Set<TagDto> tagDtos = photo.getTags().stream().map(tagEntity -> new TagDto(tagEntity.getId(), tagEntity.getName())).collect(Collectors.toSet());
         dto.setTags(tagDtos);
         return dto;
     }
 
     private PhotoEntity convertToEntity(PhotoDto dto) {
-        PhotoEntity photo = new PhotoEntity();
-        photo.setImage(dto.getImage());
-        photo.setThumbnail(dto.getThumbnail());
-        photo.setDescription(dto.getDescription());
-        photo.setUploadDate(LocalDate.now());
+        PhotoEntity photoEntity;
+        if (dto.getId() != null) {
+            photoEntity = photoRepository.findById(dto.getId()).orElseThrow(() -> new NoSuchElementException("Something very awful passed to convertToEntity"));
+        } else {
+            photoEntity = new PhotoEntity();
+        }
+        photoEntity.setImage(dto.getImage());
+        photoEntity.setThumbnail(dto.getThumbnail());
+        photoEntity.setDescription(dto.getDescription());
+        photoEntity.setUploadDate(LocalDate.now());
 
         if (dto.getTags() != null) {
             Set<TagEntity> tags = dto.getTags().stream().map(tagDto -> {
                 // Check if the tag already exists in the database
                 return tagRepository.findByName(tagDto.getName()).orElseGet(() -> tagRepository.save(new TagEntity(tagDto.getName())));
             }).collect(Collectors.toSet());
-            photo.setTags(tags);
+            photoEntity.setTags(tags);
         } else {
-            photo.setTags(new HashSet<>());
+            photoEntity.setTags(new HashSet<>());
         }
-        return photo;
+        return photoEntity;
     }
 
     public PhotoDto uploadPhoto(PhotoDto photoDto) {
