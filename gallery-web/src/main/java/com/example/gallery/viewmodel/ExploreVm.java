@@ -1,6 +1,8 @@
 package com.example.gallery.viewmodel;
 
 import com.example.gallery.DTO.ImageInfoDto;
+import com.example.gallery.DTO.PhotoDto;
+import com.example.gallery.DTO.TagDto;
 import com.example.gallery.service.PhotoService;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,7 +14,11 @@ import org.zkoss.zk.ui.select.annotation.VariableResolver;
 import org.zkoss.zk.ui.select.annotation.WireVariable;
 import org.zkoss.zkplus.spring.DelegatingVariableResolver;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Getter
 @VariableResolver(DelegatingVariableResolver.class)
@@ -20,21 +26,41 @@ public class ExploreVm {
     @WireVariable
     private PhotoService photoService;
     private List<ImageInfoDto> images;
+    private PhotoDto selectedImage;
+    @Setter
+    private String selectedImageTags;
     @Setter
     private String searchByDescription;
     @Setter
     private String searchByTags;
 
+    private String fullImage;
+
+    public static String convertSetToString(Set<TagDto> tags) {
+        if (tags.isEmpty()) {
+            return "";
+        }
+        return tags.stream().map(TagDto::getName).collect(Collectors.joining(", "));
+    }
+
     @Init
     public void init() {
         images = photoService.getAllPhotoImages();
+        selectedImageTags = "";
     }
 
     @Command
-    @NotifyChange("images")
-    public void doRemoveImage(@BindingParam("id") Long id) {
-        photoService.removePhotoById(id);
-            images = photoService.getAllPhotoImages();
+    @NotifyChange({"selectedImage", "selectedImageTags"})
+    public void doEditImage(@BindingParam("id") Long id) {
+        selectedImage = photoService.getPhotoById(id);
+        selectedImageTags = convertSetToString(selectedImage.getTags());
+
+    }
+
+    @Command
+    public void saveImage() {
+        selectedImage.setTags(convertStringToSet(selectedImageTags));
+        PhotoDto updatedPhotoDto = photoService.uploadPhoto(selectedImage);
     }
 
     @Command
@@ -47,6 +73,27 @@ public class ExploreVm {
     @NotifyChange("images")
     public void doSearchByTags() {
         images = photoService.searchPhotosByTags(searchByTags);
+    }
+
+    @Command
+    @NotifyChange("images")
+    public void doRemoveImage(@BindingParam("id") Long id) {
+        photoService.removePhotoById(id);
+        images = photoService.getAllPhotoImages();
+    }
+
+    private Set<TagDto> convertStringToSet(String tags) {
+        if (tags.isEmpty()) {
+            return new HashSet<>();
+        }
+        return Arrays.stream(tags.split(",")).map(String::trim).filter(tag -> !tag.isEmpty()).map(tag -> new TagDto(null, tag)).collect(Collectors.toSet());
+
+    }
+
+    @Command
+    @NotifyChange("fullImage")
+    public void getFullImage(@BindingParam("id") Long id) {
+        fullImage = photoService.convertThumbnailToBase64(photoService.getPhotoById(id).getImage());
     }
 
 }
