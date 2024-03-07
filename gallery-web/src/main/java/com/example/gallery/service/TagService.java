@@ -18,14 +18,11 @@ public class TagService {
     }
 
     public TagEntity convertToEntity(TagDto dto) {
-        return tagRepository.findByName(dto.getName())
-                .orElseGet(() -> new TagEntity(dto.getName()));
+        return tagRepository.findByName(dto.getName()).orElseGet(() -> new TagEntity(dto.getName()));
     }
 
     public Set<TagEntity> getTags(Collection<TagDto> crap) {
-        return crap.stream()
-                .map(this::convertToEntity)
-                .collect(Collectors.toSet());
+        return crap.stream().map(this::convertToEntity).collect(Collectors.toSet());
 
     }
 }

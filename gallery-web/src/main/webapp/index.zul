@@ -5,7 +5,8 @@
         <div class="container mt-3">
             <div class="form-group">
                 <zul:label value="Upload Image"/>
-                <zul:button label="Choose File" upload="true" onUpload="@command('uploadImage', event=uploadEvent)"/>
+                <zul:button label="Choose File" upload="true, accept=image/*"
+                            onUpload="@command('uploadImage', event=uploadEvent)"/>
             </div>
             <div class="form-group">
                 <zul:label value="Description"/>
