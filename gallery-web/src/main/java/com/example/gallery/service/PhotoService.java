@@ -10,6 +10,8 @@ import com.example.gallery.repository.TagRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.codec.binary.Base64;
 import org.imgscalr.Scalr;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -144,5 +146,12 @@ public class PhotoService {
         return photoRepository.findAll(spec).stream().map(ImageInfoDto::of).collect(Collectors.toList());
     }
 
+    private Page<ImageInfoDto> convertToDtoPage(Page<Object[]> images) {
+        return images.map(ImageInfoDto::of);
+    }
+
+    public Page<ImageInfoDto> getAllPhotoImages(Pageable pageable) {
+        return convertToDtoPage(photoRepository.pagefindAllImages(pageable));
+    }
 
 }

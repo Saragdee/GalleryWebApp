@@ -56,6 +56,12 @@
                 </div>
             </div>
             <!---->
+            <xh:button class="btn btn-primary" label="Prev" onClick="@command('prevPage')">
+                <i class="bi bi-arrow-left"/>
+            </xh:button>
+            <xh:button class="btn btn-primary" label="Next" onClick="@command('nextPage')">
+                <i class="bi bi-arrow-right"/>
+            </xh:button>
             <!-- Images-->
             <zul:div class="row">
                 <zul:forEach items="@load(vm.images)">

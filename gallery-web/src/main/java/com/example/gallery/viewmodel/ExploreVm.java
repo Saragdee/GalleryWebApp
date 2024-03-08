@@ -6,6 +6,8 @@ import com.example.gallery.DTO.TagDto;
 import com.example.gallery.service.PhotoService;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.zkoss.bind.annotation.BindingParam;
 import org.zkoss.bind.annotation.Command;
 import org.zkoss.bind.annotation.Init;
@@ -33,8 +35,9 @@ public class ExploreVm {
     private String searchByDescription;
     @Setter
     private String searchByTags;
-
     private String fullImage;
+    private static final int PAGE_SIZE = 12;
+    private int currentPage;
 
     public static String convertSetToString(Set<TagDto> tags) {
         if (tags.isEmpty()) {
@@ -45,8 +48,33 @@ public class ExploreVm {
 
     @Init
     public void init() {
-        images = photoService.getAllPhotoImages();
+        currentPage=0;
+        getImagePage(0);
         selectedImageTags = "";
+    }
+    @Command
+    @NotifyChange("images")
+    public void getImagePage(int pageIndex) {
+        Pageable pageable = PageRequest.of(pageIndex, PAGE_SIZE);
+        images = photoService.getAllPhotoImages(pageable).getContent();
+    }
+
+    @Command
+    @NotifyChange("images")
+    public void prevPage() {
+        currentPage = Math.max(0, currentPage - 1);
+        getImagePage(currentPage);
+    }
+
+    @Command
+    @NotifyChange("images")
+    public void nextPage() {
+        Pageable nextPageable = PageRequest.of(currentPage + 1, PAGE_SIZE);
+        List<ImageInfoDto> nextPageImages = photoService.getAllPhotoImages(nextPageable).getContent();
+        if (!nextPageImages.isEmpty()) {
+            currentPage++;
+            images = nextPageImages;
+        }
     }
 
     @Command
