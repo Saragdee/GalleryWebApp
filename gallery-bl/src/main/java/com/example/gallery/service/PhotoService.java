@@ -8,7 +8,6 @@ import com.example.gallery.entities.TagEntity;
 import com.example.gallery.repository.PhotoRepository;
 import com.example.gallery.repository.TagRepository;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.codec.binary.Base64;
 import org.imgscalr.Scalr;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -110,7 +109,7 @@ public class PhotoService {
     }
 
     public String convertThumbnailToBase64(byte[] thumbnailByteArray) {
-        return "data:image/png;base64," + Base64.encodeBase64String(thumbnailByteArray);
+        return "data:image/png;base64," + new String(Base64 .getEncoder().encode(thumbnailByteArray));
     }
 
     public List<ImageInfoDto> searchPhotosByDescription(String description) {

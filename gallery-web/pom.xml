@@ -65,18 +65,6 @@
             <groupId>org.zkoss.zk</groupId>
             <artifactId>zkex</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.imgscalr</groupId>
-            <artifactId>imgscalr-lib</artifactId>
-            <version>4.2</version>
-        </dependency>
-
-
-        <!--        <dependency>-->
-        <!--        <groupId>org.webjars</groupId>-->
-        <!--        <artifactId>jquery</artifactId>-->
-        <!--        </dependency>-->
-
     </dependencies>
 
     <properties>
