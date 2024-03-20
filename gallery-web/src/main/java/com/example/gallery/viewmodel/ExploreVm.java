@@ -6,6 +6,7 @@ import com.example.gallery.DTO.TagDto;
 import com.example.gallery.service.PhotoService;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.zkoss.bind.annotation.BindingParam;
@@ -18,7 +19,6 @@ import org.zkoss.zkplus.spring.DelegatingVariableResolver;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -27,17 +27,22 @@ import java.util.stream.Collectors;
 public class ExploreVm {
     @WireVariable
     private PhotoService photoService;
-    private List<ImageInfoDto> images;
+    private Page<ImageInfoDto> imagesPage;
     private PhotoDto selectedImage;
     @Setter
     private String selectedImageTags;
+    //    ---
     @Setter
     private String searchByDescription;
     @Setter
     private String searchByTags;
+    //    ---
     private String fullImage;
     private static final int PAGE_SIZE = 12;
     private int currentPage;
+
+    private String filterByDescription;
+    private String filterByTags;
 
     public static String convertSetToString(Set<TagDto> tags) {
         if (tags.isEmpty()) {
@@ -48,34 +53,36 @@ public class ExploreVm {
 
     @Init
     public void init() {
-        currentPage=0;
-        getImagePage(0);
+        fetchPage(0);
         selectedImageTags = "";
     }
-    @Command
-    @NotifyChange("images")
-    public void getImagePage(int pageIndex) {
+
+    private void fetchPage(int pageIndex) {
         Pageable pageable = PageRequest.of(pageIndex, PAGE_SIZE);
-        images = photoService.getAllPhotoImages(pageable).getContent();
-    }
-
-    @Command
-    @NotifyChange("images")
-    public void prevPage() {
-        currentPage = Math.max(0, currentPage - 1);
-        getImagePage(currentPage);
-    }
-
-    @Command
-    @NotifyChange("images")
-    public void nextPage() {
-        Pageable nextPageable = PageRequest.of(currentPage + 1, PAGE_SIZE);
-        List<ImageInfoDto> nextPageImages = photoService.getAllPhotoImages(nextPageable).getContent();
-        if (!nextPageImages.isEmpty()) {
-            currentPage++;
-            images = nextPageImages;
+        if (filterByDescription != null && !filterByDescription.isEmpty()) {
+            imagesPage = photoService.searchPhotosByDescription(filterByDescription, pageable);
+        } else if (filterByTags != null && !filterByTags.isEmpty()) {
+            imagesPage = photoService.searchPhotosByTags(filterByTags, pageable);
+        } else {
+            imagesPage = photoService.getAllPhotoImages(pageable);
         }
     }
+
+    @Command
+    @NotifyChange("imagesPage")
+    public void prevPage() {
+        if (imagesPage.hasPrevious()) {
+            fetchPage(imagesPage.getNumber() - 1);
+        }
+    }
+    @Command
+    @NotifyChange("imagesPage")
+    public void nextPage() {
+        if (imagesPage.hasNext()) {
+            fetchPage(imagesPage.getNumber() + 1);
+        }
+    }
+
 
     @Command
     @NotifyChange({"selectedImage", "selectedImageTags"})
@@ -90,24 +97,40 @@ public class ExploreVm {
         selectedImage.setTags(convertStringToSet(selectedImageTags));
         PhotoDto updatedPhotoDto = photoService.uploadPhoto(selectedImage);
     }
-
     @Command
-    @NotifyChange("images")
+    @NotifyChange({"imagesPage", "searchByDescription"})
     public void doSearchByDescription() {
-        images = photoService.searchPhotosByDescription(searchByDescription);
+        if (searchByDescription != null && !searchByDescription.trim().isEmpty()) {
+            filterByDescription = searchByDescription;
+            filterByTags = null;
+        } else {
+            filterByDescription = null;
+        }
+        fetchPage(0);
+
     }
 
     @Command
-    @NotifyChange("images")
+    @NotifyChange({"imagesPage", "searchByTags"})
     public void doSearchByTags() {
-        images = photoService.searchPhotosByTags(searchByTags);
+        if (searchByTags != null && !searchByTags.trim().isEmpty()) {
+            filterByTags = searchByTags;
+            filterByDescription = null;
+        } else {
+            if (filterByTags == null) {
+                return;
+            } else {
+                filterByTags = null;
+            }
+        }
+        fetchPage(0);
     }
 
+
     @Command
-    @NotifyChange("images")
+    @NotifyChange("imagesPage")
     public void doRemoveImage(@BindingParam("id") Long id) {
         photoService.removePhotoById(id);
-        images = photoService.getAllPhotoImages();
     }
 
     private Set<TagDto> convertStringToSet(String tags) {
@@ -117,7 +140,6 @@ public class ExploreVm {
         return Arrays.stream(tags.split(",")).map(String::trim).filter(tag -> !tag.isEmpty()).map(tag -> new TagDto(null, tag)).collect(Collectors.toSet());
 
     }
-
     @Command
     @NotifyChange("fullImage")
     public void getFullImage(@BindingParam("id") Long id) {

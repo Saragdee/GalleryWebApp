@@ -21,7 +21,7 @@ public class PhotoEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
-    @Column(name = "image")
+    @Column(name = "image", nullable = false)
     private byte[] image;
     @Column(name = "thumbnail")
     private String thumbnail;
@@ -30,14 +30,9 @@ public class PhotoEntity {
     @Column(name = "upload_date", nullable = false)
     private LocalDate uploadDate;
 
-    //@Column(name = "tags")
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "photo_tags", joinColumns = @JoinColumn(name = "photo_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
 
-    // Cascade? -- kai ivyksta veiksmas su photo, pvz delete, tegul ivyksta ir associated entity
-    // Fetchtype?
-    // EntityGraph?
-    // @Fetch SUBSELECT?
-    private Set<TagEntity> tags = new HashSet<>(); //
+    private Set<TagEntity> tags = new HashSet<>();
 }
 

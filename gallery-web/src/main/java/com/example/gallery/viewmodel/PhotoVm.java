@@ -13,6 +13,7 @@ import org.zkoss.util.media.Media;
 import org.zkoss.zk.ui.event.UploadEvent;
 import org.zkoss.zk.ui.select.annotation.VariableResolver;
 import org.zkoss.zk.ui.select.annotation.WireVariable;
+import org.zkoss.zk.ui.util.Clients;
 import org.zkoss.zkplus.spring.DelegatingVariableResolver;
 
 import java.io.IOException;
@@ -40,8 +41,12 @@ public class PhotoVm {
 
     @Command
     public void submit() throws IOException {
-        photoDto.setTags(convertStringToSet(tagsAsString));
-        photoService.uploadPhoto(photoDto);
+        if (photoDto.getImage() == null) {
+            Clients.showNotification("Please upload an image.", Clients.NOTIFICATION_TYPE_WARNING, null, "middle_center", 3000, true);
+        } else {
+            photoDto.setTags(convertStringToSet(tagsAsString));
+            photoService.uploadPhoto(photoDto);
+        }
     }
 
     @Command

@@ -10,15 +10,12 @@ import com.example.gallery.repository.TagRepository;
 import lombok.RequiredArgsConstructor;
 import org.imgscalr.Scalr;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import javax.imageio.ImageIO;
 import javax.persistence.EntityNotFoundException;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Predicate;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -30,7 +27,6 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 
-// TODO: Figure out if @Transactional should be used on the whole class or not
 public class PhotoService {
 
     private final PhotoRepository photoRepository;
@@ -77,12 +73,14 @@ public class PhotoService {
     }
 
     public PhotoDto uploadPhoto(PhotoDto photoDto) {
+        if (photoDto.getImage() == null) {
+            throw new IllegalArgumentException("You did not upload a Image");
+        }
         PhotoEntity photoEntity = convertToEntity(photoDto);
         PhotoEntity savedPhotoEntity = photoRepository.save(photoEntity);
         return convertToDto(savedPhotoEntity);
     }
 
-    // TODO: @Transactional(readOnly = true)
     public PhotoDto getPhotoById(Long id) {
         PhotoEntity photoEntity = photoRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Photo not found for ID: " + id));
         return convertToDto(photoEntity);
@@ -109,48 +107,52 @@ public class PhotoService {
     }
 
     public String convertThumbnailToBase64(byte[] thumbnailByteArray) {
-        return "data:image/png;base64," + new String(Base64 .getEncoder().encode(thumbnailByteArray));
+        return "data:image/png;base64," + new String(Base64.getEncoder().encode(thumbnailByteArray));
     }
 
-    public List<ImageInfoDto> searchPhotosByDescription(String description) {
-        Specification<PhotoEntity> spec = (root, query, criteriaBuilder) -> {
-            if (description == null || description.trim().isEmpty()) {
-                return criteriaBuilder.conjunction();
-            }
-            return criteriaBuilder.like(criteriaBuilder.lower(root.get("description")), "%" + description.toLowerCase() + "%");
-        };
-        return photoRepository.findAll(spec).stream().map(ImageInfoDto::of).collect(Collectors.toList());
+    public Page<ImageInfoDto> searchPhotosByDescription(String description, Pageable pageable) {
+        Page<Object[]> photoThumbnails = photoRepository.findByDescription(description.trim(), pageable);
+        return new PageImpl<>(flattenImageInfoMap(mapPhotoThumbnails(photoThumbnails.getContent())), pageable, photoThumbnails.getTotalElements());
     }
 
-    public List<ImageInfoDto> searchPhotosByTags(String tagsString) {
-        Specification<PhotoEntity> spec = (root, query, criteriaBuilder) -> {
-            if (tagsString == null || tagsString.trim().isEmpty()) {
-                return criteriaBuilder.conjunction();
-            }
-            query.distinct(true);
+    public Page<ImageInfoDto> searchPhotosByTags(String tagsString, Pageable pageable) {
+        List<String> normalizedTags = normalizeTags(tagsString);
+        Page<Object[]> photoThumbnails = photoRepository.findPhotoThumbnailsByTags(normalizedTags, pageable);
+        return new PageImpl<>(flattenImageInfoMap(mapPhotoThumbnails(photoThumbnails.getContent())), pageable, photoThumbnails.getTotalElements());
+    }
 
-            String[] tags = tagsString.split(",");
-            List<Predicate> predicates = new ArrayList<>();
-            for (String tag : tags) {
-                String trimmedTag = tag.trim().toLowerCase();
-                if (!trimmedTag.isEmpty()) {
-                    Join<PhotoEntity, TagEntity> tagsJoin = root.join("tags", JoinType.LEFT);
-                    predicates.add(criteriaBuilder.like(criteriaBuilder.lower(tagsJoin.get("name")), "%" + trimmedTag + "%"));
+    private Map<Long, Set<ImageInfoDto>> mapPhotoThumbnails(List<Object[]> photoThumbnails) {
+        Map<Long, Set<ImageInfoDto>> photoThumbnailsMap = new HashMap<>();
+        for (Object[] obj : photoThumbnails) {
+            Long photoId = (Long) obj[0];
+            String thumbnail = (String) obj[1];
+            Set<ImageInfoDto> thumbnailSet = photoThumbnailsMap.computeIfAbsent(photoId, k -> new HashSet<>());
+            thumbnailSet.add(ImageInfoDto.builder().id(photoId).thumbnail(thumbnail).build());
+        }
 
-                }
-            }
-            return criteriaBuilder.or(predicates.toArray(new Predicate[0]));
-        };
+        return photoThumbnailsMap;
+    }
 
-        return photoRepository.findAll(spec).stream().map(ImageInfoDto::of).collect(Collectors.toList());
+    private List<ImageInfoDto> flattenImageInfoMap(Map<Long, Set<ImageInfoDto>> photoThumbnailsMap) {
+        List<ImageInfoDto> result = new ArrayList<>();
+        for (Map.Entry<Long, Set<ImageInfoDto>> entry : photoThumbnailsMap.entrySet()) {
+            result.addAll(entry.getValue());
+        }
+        return result;
+    }
+
+
+    // can be moved to utils
+    private List<String> normalizeTags(String tagsString) {
+        return Arrays.stream(tagsString.split(",")).map(String::trim).map(String::toLowerCase).collect(Collectors.toList());
     }
 
     private Page<ImageInfoDto> convertToDtoPage(Page<Object[]> images) {
-        return images.map(ImageInfoDto::of);
+        return images.map(obj -> ImageInfoDto.builder().id((Long) obj[0]).thumbnail((String) obj[1]).build());
     }
 
     public Page<ImageInfoDto> getAllPhotoImages(Pageable pageable) {
-        return convertToDtoPage(photoRepository.pagefindAllImages(pageable));
+        return convertToDtoPage(photoRepository.pageFindAllImages(pageable));
     }
-
 }
+
