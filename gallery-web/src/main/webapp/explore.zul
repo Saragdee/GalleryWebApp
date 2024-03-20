@@ -64,7 +64,7 @@
             </xh:button>
             <!-- Images-->
             <zul:div class="row">
-                <zul:forEach items="@load(vm.images)">
+                <zul:forEach items="@load(vm.imagesPage.content)">
                     <div class="col-12 col-md-6 col-lg-3 mb-4">
                         <div class="card image-container">
                             <xh:img src="@load(each.thumbnail)" loading="lazy" object-fit="cover"/>

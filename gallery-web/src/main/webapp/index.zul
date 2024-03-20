@@ -1,23 +1,25 @@
 <?init class="org.zkoss.zk.ui.util.Composition" arg0="./templates/masterTemplate.zul" ?>
 <?page complete="true"?>
+<?link rel="stylesheet" type="text/css" href="/styles/uploadPageStyle.css"?>
 <zk xmlns:xh="xhtml" xmlns:zul="http://www.zkoss.org/2005/zul" xmlns="native">
     <xh:div self="@{define(index)}" viewModel="@id('vm') @init('com.example.gallery.viewmodel.PhotoVm')">
-        <div class="container mt-3">
+        <div class="container">
+            <h1 style="text-align: center; font-size: 3rem; margin-bottom: 2rem;">Welcome to the Super Fancy Image Uploader!</h1>
             <div class="form-group">
-                <zul:label value="Upload Image"/>
-                <zul:button label="Choose File" upload="true, accept=image/*"
-                            onUpload="@command('uploadImage', event=uploadEvent)"/>
+                <zul:label value="🌟 Upload Your Most Amazing Image Here 🌟" style="font-size: 1.5rem;"/>
+                <zul:button label="📸 Choose File" upload="true, accept=image/*"
+                            onUpload="@command('uploadImage', event=uploadEvent)" class="btn btn-primary"/>
             </div>
             <div class="form-group">
-                <zul:label value="Description"/>
-                <zul:textbox hflex="1" value="@bind(vm.photoDto.description)" placeholder="Enter description"/>
+                <zul:label value="💬 Describe Your Masterpiece 💬" style="font-size: 1.5rem;"/>
+                <zul:textbox hflex="1" value="@bind(vm.photoDto.description)" placeholder="Enter your description here..." style="font-size: 1.2rem;"/>
             </div>
             <div class="form-group">
-                <zul:label value="Tags (comma-separated):"/>
-                <zul:textbox hflex="1" value="@bind(vm.tagsAsString)" placeholder="Enter tags, separated by commas"/>
+                <zul:label value="🏷️ Tags (comma-separated):" style="font-size: 1.5rem;"/>
+                <zul:textbox hflex="1" value="@bind(vm.tagsAsString)" placeholder="e.g., amazing, breathtaking, extraordinary" style="font-size: 1.2rem;"/>
             </div>
-            <div class="form-group">
-                <zul:button label="Submit" class="btn btn-primary" onClick="@command('submit')" type="button"/>
+            <div class="form-group" style="text-align: center;">
+                <zul:button label="✨ Submit Your Masterpiece ✨" class="btn btn-primary" onClick="@command('submit')" type="button" style="font-size: 1.5rem;"/>
             </div>
         </div>
     </xh:div>
