@@ -31,25 +31,14 @@ public class ExploreVm {
     private PhotoDto selectedImage;
     @Setter
     private String selectedImageTags;
-    //    ---
     @Setter
     private String searchByDescription;
     @Setter
     private String searchByTags;
-    //    ---
     private String fullImage;
     private static final int PAGE_SIZE = 12;
-    private int currentPage;
-
     private String filterByDescription;
     private String filterByTags;
-
-    public static String convertSetToString(Set<TagDto> tags) {
-        if (tags.isEmpty()) {
-            return "";
-        }
-        return tags.stream().map(TagDto::getName).collect(Collectors.joining(", "));
-    }
 
     @Init
     public void init() {
@@ -57,15 +46,30 @@ public class ExploreVm {
         selectedImageTags = "";
     }
 
+    @Command
+    @NotifyChange("imagesPage")
     private void fetchPage(int pageIndex) {
         Pageable pageable = PageRequest.of(pageIndex, PAGE_SIZE);
-        if (filterByDescription != null && !filterByDescription.isEmpty()) {
-            imagesPage = photoService.searchPhotosByDescription(filterByDescription, pageable);
-        } else if (filterByTags != null && !filterByTags.isEmpty()) {
-            imagesPage = photoService.searchPhotosByTags(filterByTags, pageable);
+        if (filterByDescription != null && !filterByDescription.isEmpty() ||
+                filterByTags != null && !filterByTags.isEmpty()) {
+            imagesPage = photoService.searchPhotos(filterByDescription, filterByTags, pageable);
         } else {
             imagesPage = photoService.getAllPhotoImages(pageable);
         }
+    }
+
+    @Command
+    @NotifyChange({"imagesPage", "searchByDescription", "searchByTags"})
+    public void doSearch() {
+        if ((searchByDescription != null && !searchByDescription.trim().isEmpty())
+                || (searchByTags != null && !searchByTags.trim().isEmpty())) {
+            filterByDescription = searchByDescription;
+            filterByTags = searchByTags;
+        } else {
+            filterByDescription = null;
+            filterByTags = null;
+        }
+        fetchPage(0);
     }
 
     @Command
@@ -83,49 +87,32 @@ public class ExploreVm {
         }
     }
 
-
+    // ------------------------------------
     @Command
     @NotifyChange({"selectedImage", "selectedImageTags"})
     public void doEditImage(@BindingParam("id") Long id) {
         selectedImage = photoService.getPhotoById(id);
-        selectedImageTags = convertSetToString(selectedImage.getTags());
-
+        if (selectedImage != null) {
+            selectedImageTags = convertSetToString(selectedImage.getTags());
+        } else {
+            // TODO
+            System.out.println("Error: selectedImage is null. Photo with the given id does not exist.");
+        }
     }
+
+    public static String convertSetToString(Set<TagDto> tags) {
+        if (tags.isEmpty()) {
+            return "";
+        }
+        return tags.stream().map(TagDto::getName).collect(Collectors.joining(", "));
+    }
+    // ------------------------------------
 
     @Command
     public void saveImage() {
         selectedImage.setTags(convertStringToSet(selectedImageTags));
-        PhotoDto updatedPhotoDto = photoService.uploadPhoto(selectedImage);
+        photoService.uploadPhoto(selectedImage);
     }
-    @Command
-    @NotifyChange({"imagesPage", "searchByDescription"})
-    public void doSearchByDescription() {
-        if (searchByDescription != null && !searchByDescription.trim().isEmpty()) {
-            filterByDescription = searchByDescription;
-            filterByTags = null;
-        } else {
-            filterByDescription = null;
-        }
-        fetchPage(0);
-
-    }
-
-    @Command
-    @NotifyChange({"imagesPage", "searchByTags"})
-    public void doSearchByTags() {
-        if (searchByTags != null && !searchByTags.trim().isEmpty()) {
-            filterByTags = searchByTags;
-            filterByDescription = null;
-        } else {
-            if (filterByTags == null) {
-                return;
-            } else {
-                filterByTags = null;
-            }
-        }
-        fetchPage(0);
-    }
-
 
     @Command
     @NotifyChange("imagesPage")
@@ -133,17 +120,18 @@ public class ExploreVm {
         photoService.removePhotoById(id);
     }
 
-    private Set<TagDto> convertStringToSet(String tags) {
-        if (tags.isEmpty()) {
-            return new HashSet<>();
-        }
-        return Arrays.stream(tags.split(",")).map(String::trim).filter(tag -> !tag.isEmpty()).map(tag -> new TagDto(null, tag)).collect(Collectors.toSet());
-
-    }
     @Command
     @NotifyChange("fullImage")
     public void getFullImage(@BindingParam("id") Long id) {
         fullImage = photoService.convertThumbnailToBase64(photoService.getPhotoById(id).getImage());
     }
 
+    //TODO: can be moved to utils
+    private Set<TagDto> convertStringToSet(String tags) {
+        if (tags.isEmpty()) {
+            return new HashSet<>();
+        }
+
+        return Arrays.stream(tags.split(",")).map(String::trim).filter(tag -> !tag.isEmpty()).map(tag -> new TagDto(null, tag)).collect(Collectors.toSet());
+    }
 }

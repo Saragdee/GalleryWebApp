@@ -8,8 +8,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityNotFoundException;
 import java.io.IOException;
-
-
 @RestController
 @RequestMapping("/photos")
 // TODO: @ExceptionHandler, @ControllerAdvice, @ResponseStatus
@@ -22,8 +20,8 @@ public class PhotoController {
 
     @PostMapping
     public ResponseEntity<PhotoDto> createPhoto(@RequestBody PhotoDto photoDto) throws IOException {
-        PhotoDto createdPhoto = photoService.uploadPhoto(photoDto);
-        return ResponseEntity.ok(createdPhoto);
+        photoService.uploadPhoto(photoDto);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/{id}")

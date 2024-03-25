@@ -30,7 +30,7 @@ public class PhotoEntity {
     @Column(name = "upload_date", nullable = false)
     private LocalDate uploadDate;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "photo_tags", joinColumns = @JoinColumn(name = "photo_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
 
     private Set<TagEntity> tags = new HashSet<>();

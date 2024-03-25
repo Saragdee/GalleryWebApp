@@ -40,29 +40,36 @@
     <head>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
     </head>
-    <!--Search fields-->
+    <!--    Search Fields-->
     <xh:div self="@{define(index)}" viewModel="@id('vm') @init('com.example.gallery.viewmodel.ExploreVm')">
         <div class="container mt-3">
             <div class="row mb-3">
                 <div class="col">
                     <zul:textbox placeholder="Search by description..." value="@bind(vm.searchByDescription)"/>
-                    <zul:button label="Search" onClick="@command('doSearchByDescription')" iconSclass="bi bi-search"
-                                autodisable="self" style="background-color:#1414b4"/>
-                </div>
-                <div class="col">
                     <zul:textbox placeholder="Search by tags.." value="@bind(vm.searchByTags)"/>
-                    <zul:button label="Search" onClick="@command('doSearchByTags')" iconSclass="bi bi-search"
-                                autodisable="self" style="background-color:#1414b4"/>
+                    <zul:button label="Search" onClick="@command('doSearch')" iconSclass="bi bi-search"
+                                autodisable="self"
+                                style="background-color:#1414b4"/>
                 </div>
             </div>
-            <!---->
-            <xh:button class="btn btn-primary" label="Prev" onClick="@command('prevPage')">
-                <i class="bi bi-arrow-left"/>
-            </xh:button>
-            <xh:button class="btn btn-primary" label="Next" onClick="@command('nextPage')">
-                <i class="bi bi-arrow-right"/>
-            </xh:button>
-            <!-- Images-->
+        </div>
+        <!---->
+        <!--        Paging buttons-->
+        <div class="container mt-3">
+            <div class="row mb-3">
+                <div class="col">
+                    <xh:button class="btn btn-primary" label="Prev" onClick="@command('prevPage')" disabled="@load(not imagesPage.hasPrevious())">
+                        <i class="bi bi-arrow-left"/>
+                    </xh:button>
+                    <xh:button class="btn btn-primary" label="Next" onClick="@command('nextPage')" disabled="@load(not imagesPage.hasNext())">
+                        <i class="bi bi-arrow-right"/>
+                    </xh:button>
+                </div>
+            </div>
+        </div>
+        <!--        -->
+        <!--        Images-->
+        <div class="container mt-3">
             <zul:div class="row">
                 <zul:forEach items="@load(vm.imagesPage.content)">
                     <div class="col-12 col-md-6 col-lg-3 mb-4">
