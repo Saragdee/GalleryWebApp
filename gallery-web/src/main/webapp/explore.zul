@@ -58,10 +58,10 @@
         <div class="container mt-3">
             <div class="row mb-3">
                 <div class="col">
-                    <xh:button class="btn btn-primary" label="Prev" onClick="@command('prevPage')" disabled="@load(not imagesPage.hasPrevious())">
+                    <xh:button class="btn btn-primary" label="Prev" onClick="@command('prevPage')">
                         <i class="bi bi-arrow-left"/>
                     </xh:button>
-                    <xh:button class="btn btn-primary" label="Next" onClick="@command('nextPage')" disabled="@load(not imagesPage.hasNext())">
+                    <xh:button class="btn btn-primary" label="Next" onClick="@command('nextPage')">
                         <i class="bi bi-arrow-right"/>
                     </xh:button>
                 </div>
