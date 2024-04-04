@@ -10,7 +10,6 @@ import com.example.gallery.specification.SpecHelper;
 import lombok.RequiredArgsConstructor;
 import org.imgscalr.Scalr;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -49,6 +48,7 @@ public class PhotoService {
         photoEntity.setTags(mapTagsToEntities(dto));
         return photoEntity;
     }
+
     private Set<TagEntity> mapTagsToEntities(PhotoDto photoDto) {
         return photoDto.getTags().stream()
                 .map(tagService::createOrUpdateTag)
@@ -65,7 +65,7 @@ public class PhotoService {
 
     @Transactional // without Transactional, get LazyInitializationException. For now this seems like simplest solution.
     public PhotoDto getPhotoById(Long id) {
-        return PhotoDto.of(photoRepository.findById(id)
+        return PhotoDto.of(photoRepository.findByIdAndFetchTagsEagerly(id)
                 .orElseThrow(() ->
                         new NoSuchElementException("Image with id " + id + " does not exist")));
     }
@@ -89,6 +89,7 @@ public class PhotoService {
     public String convertThumbnailToBase64(byte[] thumbnailByteArray) {
         return "data:image/png;base64," + new String(Base64.getEncoder().encode(thumbnailByteArray));
     }
+
     public Page<ImageInfoDto> searchPhotos(String description, String tagsString, Pageable pageable) {
         Specification<PhotoEntity> descSpec = SpecHelper.hasDescription(description != null ? description.trim() : null);
         List<String> normalizedTags = tagsString != null ? normalizeTags(tagsString) : null;
