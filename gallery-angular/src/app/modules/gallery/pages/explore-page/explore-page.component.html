@@ -1,8 +1,21 @@
-<mat-grid-list cols="2" rowHeight="2:1" gutterSize="10px" style="margin: 10px;">
+<div>
+  <input [(ngModel)]="searchByDescription" placeholder="Search by description">
+  <input [(ngModel)]="searchByTags" placeholder="Search by tags">
+  <button (click)="doSearch()">Search</button>
+</div>
+<!---->
+<mat-grid-list cols="4" rowHeight="2:1" gutterSize="10px" style="margin: 10px;">
   <mat-grid-tile *ngFor="let photo of photos" class="image-tile">
     <img [src]="photo.thumbnail" alt="">
     <div class="overlay">
-      <button class="view-btn">View</button>
+      <button class="view-btn" (click)="openDialog(photo.id)">View</button>
     </div>
   </mat-grid-tile>
 </mat-grid-list>
+<!---->
+<mat-paginator
+[length]="totalElements"
+[pageSize]="pageSize"
+(page) = "onPageChange($event)">
+</mat-paginator>
+

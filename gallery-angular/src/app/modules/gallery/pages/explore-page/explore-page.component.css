@@ -15,10 +15,8 @@
   background-color: #00000080;
 }
 
-@media (hover: hover) and (pointer: fine) {
-  .image-tile:hover .overlay {
-    opacity: 1;
-  }
+.image-tile:hover .overlay {
+  opacity: 1;
 }
 
 .image-tile img {
@@ -38,8 +36,6 @@
   border-radius: 5px;
 }
 
-@media (hover: hover) and (pointer: fine) {
-  .view-btn:hover {
-    background-color: #ff6347;
-  }
+.view-btn:hover {
+  background-color: #ff6347;
 }

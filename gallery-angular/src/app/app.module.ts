@@ -9,6 +9,8 @@ import { ExplorePageComponent } from './modules/gallery/pages/explore-page/explo
 import { UploadPageComponent } from './modules/gallery/pages/upload-page/upload-page.component';
 import { MatGridListModule} from "@angular/material/grid-list";
 import {HttpClientModule} from "@angular/common/http";
+import {MatPaginator} from "@angular/material/paginator";
+import {FormsModule} from "@angular/forms";
 @NgModule({
   declarations: [
     AppComponent,
@@ -20,7 +22,9 @@ import {HttpClientModule} from "@angular/common/http";
     AppRoutingModule,
     CoreModule,
     MatGridListModule,
-    HttpClientModule
+    HttpClientModule,
+    MatPaginator,
+    FormsModule
   ],
   providers: [
     provideAnimationsAsync()
