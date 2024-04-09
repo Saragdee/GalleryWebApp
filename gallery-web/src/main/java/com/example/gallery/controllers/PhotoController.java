@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityNotFoundException;
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/photos")
@@ -42,8 +43,10 @@ public class PhotoController {
     }
 
     @PostMapping
-    public ResponseEntity<PhotoDto> createPhoto(@RequestBody PhotoDto photoDto) {
+    public ResponseEntity<PhotoDto> createPhoto(@RequestBody PhotoDto photoDto) throws IOException {
+        photoDto.setThumbnail(photoService.convertThumbnailToBase64(photoService.createThumbnail(photoDto.getImage(),250))); // GG
         photoService.uploadPhoto(photoDto);
+
         return ResponseEntity.ok().build();
     }
 

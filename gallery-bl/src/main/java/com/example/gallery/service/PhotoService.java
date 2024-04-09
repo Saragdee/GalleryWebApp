@@ -91,10 +91,30 @@ public class PhotoService {
     }
 
     public Page<ImageInfoDto> searchPhotos(String description, String tagsString, Pageable pageable) {
-        Specification<PhotoEntity> descSpec = SpecHelper.hasDescription(description != null ? description.trim() : null);
-        List<String> normalizedTags = tagsString != null ? normalizeTags(tagsString) : null;
-        Specification<PhotoEntity> tagsSpec = SpecHelper.hasTags(normalizedTags);
-        Specification<PhotoEntity> combinedSpec = Specification.where(descSpec).and(tagsSpec);
+        Specification<PhotoEntity> descSpec = null;
+        if (description != null && !description.isEmpty()) {
+            descSpec = SpecHelper.hasDescription(description.trim());
+        }
+
+        List<String> normalizedTags = null;
+        if (tagsString != null && !tagsString.isEmpty()) {
+            normalizedTags = normalizeTags(tagsString);
+        }
+
+        Specification<PhotoEntity> tagsSpec = null;
+        if (normalizedTags != null && !normalizedTags.isEmpty()) {
+            tagsSpec = SpecHelper.hasTags(normalizedTags);
+        }
+
+        Specification<PhotoEntity> combinedSpec = null;
+        if (descSpec != null && tagsSpec != null) {
+            combinedSpec = descSpec.and(tagsSpec);
+        } else if (descSpec != null) {
+            combinedSpec = descSpec;
+        } else if (tagsSpec != null) {
+            combinedSpec = tagsSpec;
+        }
+
         return photoRepository.findAll(combinedSpec, pageable).map(ImageInfoDto::of);
     }
 

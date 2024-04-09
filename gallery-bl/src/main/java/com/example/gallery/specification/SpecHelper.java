@@ -23,7 +23,7 @@ public class SpecHelper {
 
     public static Specification<PhotoEntity> hasTags(List<String> tags) {
         return (root, query, criteriaBuilder) -> {
-            if (tags != null && !tags.isEmpty()) {
+            if (tags != null || !tags.isEmpty()) {
                 Subquery<Long> subquery = query.subquery(Long.class);
                 Root<PhotoEntity> photoEntity = subquery.from(PhotoEntity.class);
                 Join<PhotoEntity, TagEntity> tagsJoin = photoEntity.join("tags", JoinType.INNER);

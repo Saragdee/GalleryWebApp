@@ -31,14 +31,16 @@ public class ExploreVm {
     private PhotoDto selectedImage;
     @Setter
     private String selectedImageTags;
+
     @Setter
-    private String searchByDescription;
+    private String searchByDescription = "";
     @Setter
-    private String searchByTags;
+    private String searchByTags = "";
+
     private String fullImage;
     private static final int PAGE_SIZE = 12;
-    private String filterByDescription;
-    private String filterByTags;
+    private String filterByDescription = "";
+    private String filterByTags = "";
 
     @Init
     public void init() {
@@ -50,26 +52,28 @@ public class ExploreVm {
     @NotifyChange("imagesPage")
     private void fetchPage(int pageIndex) {
         Pageable pageable = PageRequest.of(pageIndex, PAGE_SIZE);
-        if (filterByDescription != null && !filterByDescription.isEmpty() ||
-                filterByTags != null && !filterByTags.isEmpty()) {
+        if (!filterByDescription.isEmpty() || !filterByTags.isEmpty()) {
             imagesPage = photoService.searchPhotos(filterByDescription, filterByTags, pageable);
         } else {
             imagesPage = photoService.getAllPhotoImages(pageable);
         }
+        System.out.println(filterByTags);
+        System.out.println(filterByDescription);
     }
 
     @Command
     @NotifyChange({"imagesPage", "searchByDescription", "searchByTags"})
     public void doSearch() {
-        if ((searchByDescription != null && !searchByDescription.trim().isEmpty())
-                || (searchByTags != null && !searchByTags.trim().isEmpty())) {
+        if (!searchByDescription.isEmpty() || !searchByTags.isEmpty()) {
             filterByDescription = searchByDescription;
             filterByTags = searchByTags;
-        } else {
-            filterByDescription = null;
-            filterByTags = null;
+        }
+        else {
+            filterByDescription ="";
+            filterByTags="";
         }
         fetchPage(0);
+
     }
 
     @Command
@@ -123,6 +127,7 @@ public class ExploreVm {
     @Command
     @NotifyChange("fullImage")
     public void getFullImage(@BindingParam("id") Long id) {
+        System.out.println(id);
         fullImage = photoService.convertThumbnailToBase64(photoService.getPhotoById(id).getImage());
     }
 
