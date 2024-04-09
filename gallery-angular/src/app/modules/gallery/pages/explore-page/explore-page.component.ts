@@ -1,18 +1,17 @@
 import {Component, OnInit} from '@angular/core';
 import {ImageInfoEntity} from "../../../../core/entity/ImageInfoEntity";
-import {PhotoEntity} from "../../../../core/entity/PhotoEntity";
 import {PhotoService} from "../../../../core/service/photo.service";
 import {Page} from "../../../../core/entity/page";
 import {ImageDialogComponent} from "../../dialog/image-dialog/image-dialog.component";
 import {MatDialog} from "@angular/material/dialog";
 import {PageEvent} from "@angular/material/paginator";
+import {BreakpointObserver, Breakpoints} from "@angular/cdk/layout";
 
 @Component({
   selector: 'app-explore-page', templateUrl: './explore-page.component.html', styleUrl: './explore-page.component.css'
 })
 export class ExplorePageComponent implements OnInit {
   public photos: ImageInfoEntity[] | undefined;
-  public photo: PhotoEntity | undefined;
 
   public searchByDescription = '';
   public searchByTags = '';
@@ -24,10 +23,28 @@ export class ExplorePageComponent implements OnInit {
   public pageSize: number = 12;
   public totalElements: number = 0;
 
-  constructor(private photoService: PhotoService, private dialog: MatDialog) {
+  //
+  gridCols: number | undefined;
+
+  constructor(private photoService: PhotoService, private dialog: MatDialog, private breakpointObserver: BreakpointObserver) {
   }
 
   ngOnInit() {
+    this.breakpointObserver.observe([Breakpoints.XSmall, Breakpoints.Small, Breakpoints.Medium, Breakpoints.Large, Breakpoints.XLarge]).subscribe(result => {
+      if (result.matches) {
+        if (this.breakpointObserver.isMatched(Breakpoints.XSmall)) {
+          this.gridCols = 1;
+        } else if (this.breakpointObserver.isMatched(Breakpoints.Small)) {
+          this.gridCols = 2;
+        } else if (this.breakpointObserver.isMatched(Breakpoints.Medium)) {
+          this.gridCols = 2;
+        } else if (this.breakpointObserver.isMatched(Breakpoints.Large)) {
+          this.gridCols = 4;
+        } else if (this.breakpointObserver.isMatched(Breakpoints.XLarge)) {
+          this.gridCols = 4;
+        }
+      }
+    });
     this.fetchPage(this.page);
   }
 
