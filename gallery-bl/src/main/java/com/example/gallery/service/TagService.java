@@ -19,7 +19,7 @@ public class TagService {
         if (tagDto.getId() != null) {
             tagEntity = tagRepository.findById(tagDto.getId())
                     .orElseThrow(() ->
-                            new NoSuchElementException("Tag with name " + tagDto.getName() + " not found!"));
+                            new NoSuchElementException("Tag with id " + tagDto.getId() + " not found!"));
         } else {
             tagEntity = tagRepository.findByName(tagDto.getName())
                     .orElse(new TagEntity());
