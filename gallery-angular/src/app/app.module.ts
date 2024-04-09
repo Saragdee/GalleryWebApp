@@ -10,7 +10,12 @@ import { UploadPageComponent } from './modules/gallery/pages/upload-page/upload-
 import { MatGridListModule} from "@angular/material/grid-list";
 import {HttpClientModule} from "@angular/common/http";
 import {MatPaginator} from "@angular/material/paginator";
-import {FormsModule} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {LayoutModule} from "@angular/cdk/layout";
+import {MatCard, MatCardContent} from "@angular/material/card";
+import {MatFormField, MatLabel} from "@angular/material/form-field";
+import {MatInput} from "@angular/material/input";
+import {MatButton} from "@angular/material/button";
 @NgModule({
   declarations: [
     AppComponent,
@@ -24,7 +29,15 @@ import {FormsModule} from "@angular/forms";
     MatGridListModule,
     HttpClientModule,
     MatPaginator,
-    FormsModule
+    FormsModule,
+    LayoutModule,
+    ReactiveFormsModule,
+    MatCard,
+    MatCardContent,
+    MatFormField,
+    MatInput,
+    MatButton,
+    MatLabel
   ],
   providers: [
     provideAnimationsAsync()

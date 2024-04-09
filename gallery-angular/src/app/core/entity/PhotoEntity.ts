@@ -1,7 +1,7 @@
 import {TagEntity} from "./TagEntity";
 
 export interface PhotoEntity {
-  id: number;
+  id: any;
   image: any;
   thumbnail: string;
   description: string;
