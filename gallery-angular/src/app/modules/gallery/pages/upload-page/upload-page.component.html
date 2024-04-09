@@ -1,13 +1,18 @@
-<div>
+<div class="container">
   <h2>Upload Photo</h2>
-  <form (ngSubmit)="onSubmit()">
-    <label for="image">Image:</label>
-    <input type="file" accept="image/*" id="image" (change)="onFileSelected($event)">
-    <label for="description">Description:</label>
-    <input type="text" id="description" [(ngModel)]="photo.description" name="description">
-    <label for="tags">Tags:</label>
-    <input type="text" id="tags" [(ngModel)]="tags" name="tags">
+  <form (ngSubmit)="onSubmit()" #uploadForm="ngForm">
+    <input type="file" id="fileInput" (change)="onFileSelected($event)" accept="image/*">
 
-    <button type="submit">Upload</button>
+    <mat-form-field>
+      <mat-label>Description:</mat-label>
+      <input matInput type="text" id="description" [(ngModel)]="photo.description" name="description">
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Tags:</mat-label>
+      <input matInput type="text" id="tags" [(ngModel)]="tags" name="tags">
+    </mat-form-field>
+
+    <button mat-raised-button type="submit" [disabled]="!uploadForm.form.valid">Upload</button>
   </form>
 </div>

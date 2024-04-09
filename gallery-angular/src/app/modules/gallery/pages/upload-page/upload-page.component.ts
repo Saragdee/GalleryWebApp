@@ -11,7 +11,7 @@ import {Router} from "@angular/router";
 
 export class UploadPageComponent {
 
-  photo: PhotoEntity = {
+  photo: PhotoEntity  = {
     id: null,
     image: null,
     thumbnail: '',
@@ -25,7 +25,8 @@ export class UploadPageComponent {
   }
 
   // TODO: Performance: Process the file in chunks? File size limit?
-  // TODO: Max File Size handling + user notification
+  // TODO: Max File Size handling + user notification\
+  // TODO: Only allow submitting if picture is uploaded
   onFileSelected(event: any) {
     if (event.target.files.length > 0) {
       const file = event.target.files[0];
